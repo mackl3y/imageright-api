@@ -11,21 +11,27 @@ import * as images from './api/images';
 import * as objecttypes from './api/objecttypes';
 import * as pages from './api/pages';
 
-export { authenticate } from './api/authentication';
+export {
+  authenticate,
+  authenticateVIM,
+  createVIMAuthorization,
+  exchangeVIMAuthorizationCode,
+} from './api/authentication';
 
 const VERSION = '6.2.23.1417';
 
 class ImageRight {
-  constructor(baseUrl, AccessToken) {
+  constructor(baseUrl, AccessToken, tokenType = 'AccessToken') {
     this.version = VERSION;
     this.baseUrl = baseUrl;
     this.AccessToken = AccessToken;
+    this.tokenType = tokenType;
   }
 
   api() {
     return axios.create({
       baseURL: this.baseUrl,
-      headers: { Authorization: `AccessToken ${this.AccessToken}` },
+      headers: { Authorization: `${this.tokenType} ${this.AccessToken}` },
     });
   }
 

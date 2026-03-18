@@ -1,4 +1,9 @@
-import ImageRight, { authenticate } from './imageright';
+import ImageRight, {
+  authenticate,
+  authenticateVIM,
+  createVIMAuthorization,
+  exchangeVIMAuthorizationCode,
+} from './imageright';
 
 const VERSION = '0.0.3';
 
@@ -8,13 +13,27 @@ class Library {
     this.version = VERSION;
   }
 
-  createAPI({ AccessToken }) {
-    this.api = new ImageRight(this.baseUrl, AccessToken);
+  createAPI({ AccessToken, tokenType }) {
+    this.api = new ImageRight(this.baseUrl, AccessToken, tokenType);
     return Promise.resolve(this.api);
   }
 
   connect(username, password) {
     return authenticate(this.baseUrl, username, password)
+      .then(this.createAPI.bind(this));
+  }
+
+  beginVIMAuthorization(vimOptions = {}) {
+    return createVIMAuthorization(vimOptions);
+  }
+
+  connectVIM(username, password, vimOptions = {}) {
+    return authenticateVIM(username, password, vimOptions)
+      .then(this.createAPI.bind(this));
+  }
+
+  connectVIMWithCode(code, vimOptions = {}) {
+    return exchangeVIMAuthorizationCode(code, vimOptions)
       .then(this.createAPI.bind(this));
   }
 
